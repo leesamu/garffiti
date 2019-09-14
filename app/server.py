@@ -3,50 +3,65 @@ from collections import deque, defaultdict
 from argparse import ArgumentParser
 from base64 import b64encode, b64decode
 
+from cv import *
+
 app = Flask(__name__)
 default_port = 8888
 
-loc_to_image_map = defaultdict(list)
+# Take the location as a key and return the associated image, annotation, and feature vector
+image_map = defaultdict(list)
 
-@app.route('/data', methods=['POST'])
-def home():
+
+# Annotation mode
+@app.route('/save', methods=['POST'])
+def save(): 
     data = request.get_json()
     
-    print("\n\n\n")
-    print(data)
-    print("\n\n\n")
-
-    #if data is None:
-    #    return
-
     gps_loc = ",".join([ str(x) for x in data["gps_loc"] ])
     image = b64decode(data["image"])
     annot = b64decode(data["annotation"])
 
-    loc_to_image_map[gps_loc].append(image)
+    image_map[gps_loc]["raw"].append(image)
+    image_map[gps_loc]["featurized"].append(featurize(image))
+    image_map[gps_loc]["annotation"].append(annot)
 
-    print(gps_loc)
-    print(loc_to_image_map)
-    print(annot)
+# Explore mode for viewing current art
+@app.route('/explore', methods=['POST'])
+def read():
+    data = request.get_json()
 
-    return "It works"
+    gps_loc = ",".join([ str(x) for x in data["gps_loc"] ])
+    image = b64decode(data["image"])
+
+    ft = featurize(image)
+
+    closest_match_score = 0
+    best_match = None
+    for ft_img in image_map[gps_loc]["featurized"]:
+        score = match(ft, ft_img)
+        if score is None:
+            continue
+        if score > closest_match_score or closest_match_score == 0:
+            best_match = ft_img
+
+    # return transform(best_image, best_annotation, best_features, query_image, query_features)
+    
+    return b64encode(image)
 
 def arguments():
     parser = ArgumentParser()
-    parser.set_defaults(show_path=False, show_similarity=False)
+    parser.set_defaults(dummy=False)
 
-    parser.add_argument("-p", "--show_path", action="store_true", dest="show_path")
-    parser.add_argument("-s", "--show_sim", action="store_true", dest="show_similarity")
+    parser.add_argument("-t", "--tolerance", action="store", type=int, dest="tolerance")
 
     return parser.parse_args()
 
 
 def main():
-    args = arguments()
 
-    SHOW_PATH = args.show_path
-    SHOW_SIMILARITY = args.show_similarity
- 
+    args = arguments()
+    TOLERANCE = args.tolerance
+
     #app.run(debug=True, host='0.0.0.0')
     app.run()
 
