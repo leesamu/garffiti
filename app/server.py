@@ -12,16 +12,24 @@ loc_to_image_map = defaultdict(list)
 def home():
     data = request.get_json()
     
+    print("\n\n\n")
+    print(data)
+    print("\n\n\n")
+
     #if data is None:
     #    return
 
-    gps_loc = ",".join([ str(x) for x in data["gps"] ])
+    gps_loc = ",".join([ str(x) for x in data["gps_loc"] ])
     image = b64decode(data["image"])
     annot = b64decode(data["annotation"])
 
     loc_to_image_map[gps_loc].append(image)
 
-    #return "It works"
+    print(gps_loc)
+    print(loc_to_image_map)
+    print(annot)
+
+    return "It works"
 
 def arguments():
     parser = ArgumentParser()
