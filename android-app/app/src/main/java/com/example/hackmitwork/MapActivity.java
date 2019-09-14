@@ -34,6 +34,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap){
         Toast.makeText(this, "Map is ready", Toast.LENGTH_SHORT).show();
         nMap = googleMap;
+        nMap.setMyLocationEnabled(true);
     }
     private void getDeviceLocation(){
       mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
@@ -70,10 +71,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         setContentView(R.layout.activity_map);
         initMap();
         getDeviceLocation();
-        nMap.setMyLocationEnabled(true);
+
 
 
     }
+
 
     private void initMap(){
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
