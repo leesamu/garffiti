@@ -1,25 +1,24 @@
 import cv2
 import config
 
-class Matcher:
-    """
-    Creates an image matcher object that can determine
-    whether two images match using SURF features.
-    """
+class CV:
     def __init__(self):
+        self.sift = cv2.SIFT()
         self.flann = cv2.FlannBasedMatcher(config.INDEX_PARAMS, config.SEARCH_PARAMS)
 
-    def find_matches(self, matches):
+    # Returns the a tuple of features: (keypoints, descriptors).
+    def extract_features(self, image):
+        return sift.detectAndCompute(image)
+
+    # Returns a list of "good" matches determines by a preset threshold.
+    def extract_good_matches(self, matches):
         good = []
         for i, (m, n) in enumerate(matches):
             if m.distance < (config.DISTANCE_THRESH * n.distance):
                 good.append(m)
         return good
 
-    """
-    Returns the number of good matches if it is over
-    the cutoff threshold, otherwise returns None.
-    """
+    # Determines how close of a match two images are.
     def match(self, test_data, train_data):
         test_kp, test_des = test_data
         train_kp, train_des = train_data
@@ -27,7 +26,7 @@ class Matcher:
         score = 0
 
         # Find matches in keypoints using FLANN.
-        matches = self.find_matches(self.flann.knnMatch(test_des, train_des, k = 2))
+        matches = self.extract_good_matches(self.flann.knnMatch(test_des, train_des, k = 2))
 
         # Calculate the threshold for detecting a match.
         test_threshold = 0.1 * len(test_kp)
