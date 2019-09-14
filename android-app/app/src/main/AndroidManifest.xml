@@ -25,6 +25,9 @@
             android:value="AIzaSyAYIa6V55qtlPu7MReV2IKVZnoywlkVSdI"/>
 
         <activity
+            android:name=".ExploreActivity"
+            android:label="@string/title_explore_page"></activity>
+        <activity
             android:name=".MapActivity"
            ></activity>
         <activity android:name=".MainActivity">
