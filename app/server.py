@@ -11,7 +11,7 @@ loc_to_image_map = defaultdict(list)
 @app.route('/data', methods=['POST'])
 def home():
     data = request.get_json()
-    
+
     print("\n\n\n")
     print(data)
     print("\n\n\n")
@@ -46,8 +46,7 @@ def main():
 
     SHOW_PATH = args.show_path
     SHOW_SIMILARITY = args.show_similarity
- 
-    #app.run(debug=True, host='0.0.0.0')
+
     app.run()
 
 if __name__ == "__main__":
