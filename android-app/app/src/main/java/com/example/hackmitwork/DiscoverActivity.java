@@ -65,7 +65,9 @@ public class DiscoverActivity extends AppCompatActivity {
             //if (videoStreamingThread != null){
             //    videoStreamingThread.push(frame, parameters);
             //}
-            String encodedImage = Base64.encodeToString(frame, Base64.DEFAULT);
+            //String encodedImage = Base64.encodeToString(frame, Base64.DEFAULT);
+            byte bytestring[] = "hello world".getBytes();
+            String encodedImage = Base64.encodeToString(bytestring, Base64.DEFAULT);
             sendPost2(encodedImage);
             mCamera.addCallbackBuffer(frame);
         }
