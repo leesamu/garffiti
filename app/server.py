@@ -34,7 +34,8 @@ def save():
 # Explore mode for viewing current art
 @app.route('/explore', methods=['POST', 'GET'])
 def read():
-    data = request.get_json()
+    print flask.request.form
+    data = json.loads(flask.request.form.to_dict()[0])
 
     gps_loc = ",".join([ str(x) for x in data["gps_loc"] ])
     image = decode(data["image"])
