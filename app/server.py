@@ -1,3 +1,4 @@
+import flask
 from flask import Flask, render_template, request, url_for, jsonify
 from collections import deque, defaultdict
 from argparse import ArgumentParser
@@ -34,7 +35,8 @@ def read():
     gps_loc = ",".join([ str(x) for x in data["gps_loc"] ])
     image = decode(data["image"])
 
-    ft = featurize(image)
+    img, kp, desc = featurize(image)
+    ft = (kp, desc)
 
     closest_match_score = 0
     best_match = None
@@ -49,29 +51,35 @@ def read():
 
     return encode(image)
 
-@app.route('/gps', methods=['GET'])
+@app.route('/gps', methods=['GET', 'POST'])
 def gps():
-    points = { "gps" : image_map.keys() }
-    for i in range(len(points["gps"])):
-        points["gps"][i] = (int(points["gps"][i].split(",")[0]), int(points["gps"][i].split(",")[1]))
-    return json.dumps(points)
+    if flask.request.method == 'GET':
+        points = { "gps" : image_map.keys() }
+        for i in range(len(points["gps"])):
+            points["gps"][i] = (float(points["gps"][i].split(",")[0]), float(points["gps"][i].split(",")[1]))
+        return json.dumps(points)
+    else:
+        req = json.loads(flask.request.form.to_dict().keys()[0])
+        print req
+        gps_str = ",".join([str(req["lat"]), str(req["lng"])])
+        image_map[gps_str] = None
+        return "GPS point added!"
 
 def arguments():
     parser = ArgumentParser()
     parser.set_defaults(dummy=False)
 
-    parser.add_argument("-t", "--tolerance", action="store", type=int, dest="tolerance")
+    #parser.add_argument("-t", "--tolerance", action="store", type=int, dest="tolerance")
 
     return parser.parse_args()
 
 
 def main():
-
     args = arguments()
-    TOLERANCE = args.tolerance
+    #TOLERANCE = args.tolerance
 
-    #app.run(debug=True, host='0.0.0.0')
-    app.run()
+    app.run(debug=True, host='0.0.0.0')
+    #app.run()
 
 if __name__ == "__main__":
     main()
