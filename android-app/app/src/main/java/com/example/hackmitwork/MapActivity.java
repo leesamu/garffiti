@@ -12,6 +12,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Array;
 import java.util.HashMap;
 import org.json.JSONArray;
 import com.android.volley.VolleyLog;
@@ -203,7 +204,10 @@ private void sendPost2(LatLng latLng, String tag){
                        public boolean onMarkerClick(Marker marker) {
                            LatLng latLng = marker.getPosition();
                            Intent i = new Intent(MapActivity.this, DiscoverActivity.class);
-                           i.putExtra("latLng",latLng);
+                           double lat = latLng.latitude;
+                           double lng = latLng.longitude;
+                           String concat = Double.toString(lat) + "," + Double.toString(lng);
+                           i.putExtra("latLng", concat);
                            startActivity(i);
 
                            //Using position get Value from arraylist

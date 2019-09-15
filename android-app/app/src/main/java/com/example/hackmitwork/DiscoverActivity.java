@@ -6,7 +6,9 @@ import android.hardware.Camera.PreviewCallback;
 import android.util.Log;
 import android.widget.ImageView;
 import androidx.appcompat.app.AppCompatActivity;
-
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import com.google.android.gms.maps.model.LatLng;
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -16,11 +18,13 @@ import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.maps.model.LatLng;
+import android.util.Base64;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 
 public class DiscoverActivity extends AppCompatActivity {
 
@@ -28,6 +32,7 @@ public class DiscoverActivity extends AppCompatActivity {
     private Camera mCamera = null;
     public byte[] reusedBuffer = null;
     private ImageView annotatedImageView = null;
+    private String latLng = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +45,16 @@ public class DiscoverActivity extends AppCompatActivity {
         reusedBuffer = new byte[1920 * 1080 * 3 / 2]; // 1.5 bytes per pixel
         mCamera.addCallbackBuffer(reusedBuffer);
         setContentView(R.layout.activity_discover);
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) {
+            latLng = extras.getString("latLng");
+
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
     }
 
     private PreviewCallback previewCallback = new PreviewCallback() {
@@ -50,25 +65,27 @@ public class DiscoverActivity extends AppCompatActivity {
             //if (videoStreamingThread != null){
             //    videoStreamingThread.push(frame, parameters);
             //}
-
+            String encodedImage = Base64.encodeToString(frame, Base64.DEFAULT);
+            sendPost2(encodedImage);
             mCamera.addCallbackBuffer(frame);
         }
     };
 
-    private void sendPost2(LatLng latLng, String encoded_image){
+    private void sendPost2(String encoded_image){
         try {
             RequestQueue requestQueue = Volley.newRequestQueue(this);
             String URL = "http://35.194.84.11:5000/gps";
             JSONObject jsonBody = new JSONObject();
-            jsonBody.put("", );
-            jsonBody.put("lng",latLng.longitude);
-            jsonBody.put("lat",latLng.latitude);
+            jsonBody.put("image", encoded_image);
+            jsonBody.put("latlng", latLng);
             final String requestBody = jsonBody.toString();
 
             StringRequest stringRequest = new StringRequest(Request.Method.POST, URL, new Response.Listener<String>() {
                 @Override
                 public void onResponse(String response) {
-
+                    byte[] decodedString = Base64.decode(response, Base64.DEFAULT);
+                    Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+                    annotatedImageView.setImageBitmap(decodedByte);
                 }
             }, new Response.ErrorListener() {
                 @Override

@@ -36,7 +36,7 @@ def save():
 def read():
     data = request.get_json()
 
-    gps_loc = ",".join([ str(x) for x in data["gps_loc"] ])
+    gps_loc = data["latlng"]
     image = decode(data["image"])
 
     img, kp, desc = featurize(image)
