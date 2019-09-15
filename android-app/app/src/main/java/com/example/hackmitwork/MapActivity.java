@@ -1,11 +1,22 @@
 package com.example.hackmitwork;
 
+import java.io.IOException;
 import android.location.Location;
 import android.nfc.Tag;
+import android.os.AsyncTask;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import java.util.HashMap;
+import com.android.volley.toolbox.Volley;
 import android.os.Bundle;
 import android.content.Intent;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.android.volley.Request.Method;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.*;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -21,6 +32,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import java.io.OutputStream;
 import android.util.Log;
+import java.util.Map;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -31,6 +43,10 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.io.InputStream;
+import java.io.BufferedInputStream;
+import com.android.volley.AuthFailureError;
+
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -81,43 +97,38 @@ private LatLng getMarkers(){
     }
     return null;
 }
-private void sendPost(LatLng latLng, String tag){
+
+private void sendPost(LatLng latLng, String tag)
+    {
     try {
-        double latitude = latLng.latitude;
-        double longitude = latLng.longitude;
-        URL url = new URL("35.194.84.11:5000/gps");
-        HttpURLConnection con = (HttpURLConnection) url.openConnection();
-        con.setRequestMethod("POST");
-        con.setRequestProperty("Content-Type", "application/json; utf-8");
-        con.setRequestProperty("Accept", "application/json");
-        con.setDoOutput(true);
-        String jsonString = new JSONObject()
-                .put("lat", latitude)
-                .put("long", longitude)
-                .put("tag", tag).toString();
+        String url = "http://35.194.84.11:5000/gps";
+        final double latitude = latLng.latitude;
+        final double longitude = latLng.longitude;
+        RequestQueue requestQueue = Volley.newRequestQueue(MapActivity.this);
+        HashMap<String,String> params = new HashMap<>();
+        params.put("tag",tag);
+        Log.d("Hello","This was hit");
+        CustomRequest jsObjRequest = new CustomRequest(Method.POST, url, params, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+               Log.d("ooh","What");
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+               Log.d("error", "Volley");
+            }
+        });
+        requestQueue.add(jsObjRequest);
 
-        OutputStream os = con.getOutputStream();
-        byte[] input = jsonString.getBytes("utf-8");
-        BufferedReader br = new BufferedReader(
-                new InputStreamReader(con.getInputStream(), "utf-8"));
-        StringBuilder response = new StringBuilder();
-        String responseLine = null;
-        while ((responseLine = br.readLine()) != null) {
-            response.append(responseLine.trim());
-        }
-        System.out.println(response.toString());
+    } catch (Exception e) {
+        Log.d("Error","fail 2");
+    }
+        // Toast.makeText(getApplicationContext(), "done", Toast.LENGTH_LONG).show();
 
     }
-    catch (MalformedURLException m){
-        m.getStackTrace();
-    }
-    catch (IOException i){
-        i.getStackTrace();
-    }
-    catch (JSONException j){
-        j.getStackTrace();
-    }
-}
+
+
 
     @Override
     public void onMapReady(GoogleMap googleMap){
