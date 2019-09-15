@@ -36,3 +36,15 @@ def match(self, test_data, train_data):
     else:
         return len(matches)
 
+def decode(raw_data, gray_scale = False):
+    img_array = np.asarray(bytearray(raw_data), dtype=np.int8)
+    if gray_scale:
+        cv_image = cv2.imdecode(img_array, 0)
+    else:
+        cv_image = cv2.imdecode(img_array, -1)
+    return cv_image
+
+def encode(img, jpeg_quality = 95):
+    result, data = cv2.imencode('.jpg', img, [cv2.IMWRITE_JPEG_QUALITY, jpeg_quality])
+    raw_data = data.tostring()
+    return raw_data
