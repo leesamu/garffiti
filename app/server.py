@@ -15,7 +15,7 @@ image_map = defaultdict(list)
 tag_map = defaultdict(list)
 
 # Annotation mode
-@app.route('/save', methods=['POST'])
+@app.route('/save', methods=['POST', 'GET'])
 def save():
     data = request.get_json()
 
@@ -29,7 +29,7 @@ def save():
 
     tag_map[gps_loc] = data["tag"]
 
-    return json.dumps({"image":encode(image)})
+    return encode(image)
 
 # Explore mode for viewing current art
 @app.route('/explore', methods=['POST', 'GET'])
