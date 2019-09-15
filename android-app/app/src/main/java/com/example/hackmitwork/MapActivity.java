@@ -3,9 +3,10 @@ package com.example.hackmitwork;
 import android.location.Location;
 import android.nfc.Tag;
 import android.os.Bundle;
-
+import android.content.Intent;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.*;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -22,6 +23,8 @@ import androidx.appcompat.widget.Toolbar;
 
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback {
@@ -29,11 +32,14 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private FusedLocationProviderClient mFusedLocationProviderClient;
     private final String TAG = "Google Maps";
     private static final float DEFAULT_ZOOM = 15f;
+    private Button mGps;
+
 
     @Override
     public void onMapReady(GoogleMap googleMap){
         Toast.makeText(this, "Map is ready", Toast.LENGTH_SHORT).show();
         nMap = googleMap;
+        getDeviceLocation();
         nMap.setMyLocationEnabled(true);
     }
     private void getDeviceLocation(){
@@ -47,7 +53,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                if(task.isSuccessful()){
                    Log.d("Sucess","Task was sucesfull");
                    Location currentLocation = (Location) task.getResult();
-                   moveCamera(new LatLng(currentLocation.getLatitude(),currentLocation.getLongitude()),DEFAULT_ZOOM);
+                   LatLng latLng = new LatLng(currentLocation.getLatitude(),currentLocation.getLongitude());
+                   moveCamera(latLng,DEFAULT_ZOOM);
+
                }
                else {
                    Log.d("Failure","Current location not found");
@@ -63,6 +71,10 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private void moveCamera(LatLng latLng,float zoom){
         Log.d(TAG,"Camera moved to lat: " + latLng.latitude + " and long: " + latLng.longitude);
         nMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,zoom));
+
+    }
+    private void renderMarker(){
+        startActivity(new Intent(MapActivity.this,ExploreActivity.class));
     }
 
     @Override
@@ -70,8 +82,13 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
         initMap();
-        getDeviceLocation();
-
+        mGps = (Button) findViewById(R.id.markerbtn);
+        mGps.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                renderMarker();
+            }
+        });
 
 
     }
