@@ -15,7 +15,16 @@
         android:name="com.google.android.gms.maps.SupportMapFragment" />
 
     <include layout="@layout/content_map" />
+    <Button
+        android:id="@+id/markerbtn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@color/colorPrimaryDark"
+        android:textColor="#FFFFFF"
+        android:text="Add Marker">
 
+    </Button>
 
 
 </RelativeLayout>
