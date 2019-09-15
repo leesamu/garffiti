@@ -40,16 +40,19 @@ def read():
 
     closest_match_score = 0
     best_match = None
-    for ft_img in image_map[gps_loc]["featurized"]:
+    for idx, ft_img in enumerate(image_map[gps_loc]["featurized"]):
         score = match(ft, ft_img)
         if score is None:
             continue
-        if score > closest_match_score or closest_match_score == 0:
-            best_match = ft_img
+        if score > closest_match_score:
+            best_match = image_map[gps_loc]["raw"][idx]
 
     # return transform(best_image, best_annotation, best_features, query_image, query_features)
+    
+    if best_match is None:
+        return encode(cv2.cvtColor(image, cv2.COLOR_BGR2GRAY))
+    return encode(best_match)
 
-    return encode(image)
 
 @app.route('/gps', methods=['GET', 'POST'])
 def gps():
