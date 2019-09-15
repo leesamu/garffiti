@@ -15,7 +15,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 //import edu.cmu.cs.gabriel.network.AnnotationStreamingThread;
 
-public class DrawingView extends View {
+public class DrawingView extends View  {
     private static final String LOG_TAG = "DrawingView";
     public int width;
     public  int height;
@@ -138,25 +138,25 @@ public class DrawingView extends View {
 
     public void saveDrawing(Bitmap whatTheUserSeeBitmap)
     {
-//        Bitmap whatTheUserDrewBitmap = getDrawingCache();
+         Bitmap whatTheUserDrewBitmap = getDrawingCache();
 //        // don't forget to clear it (see above) or you just get duplicates
 //        // NOTE that's an incredibly useful trick for cropping/resizing squares while handling all memory problems etc
 //        // http://stackoverflow.com/a/17733530/294884
-//        whatTheUserDrewBitmap = ThumbnailUtils.extractThumbnail(whatTheUserDrewBitmap, 256, 256);
+        whatTheUserDrewBitmap = ThumbnailUtils.extractThumbnail(whatTheUserDrewBitmap, 256, 256);
 //        // you can now save the bitmap to a file, or display it in an ImageView:
-//        //ImageView testArea = ...
+//          ImageView testArea
 //        //testArea.setImageBitmap( whatTheUserDrewBitmap );
-//        File annotationImage = new File (Const.ROOT_DIR.getAbsolutePath() + File.separator + "sketch.jpg");
-//        if (annotationImage.exists())
-//            annotationImage.delete();
-//        try {
-//            FileOutputStream out = new FileOutputStream(annotationImage);
-//            whatTheUserDrewBitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
-//            out.flush();
-//            out.close();
-//        } catch (Exception e) {
-//            Log.e(LOG_TAG, "Error saving image: " + e.getMessage());
-//        }
+          File annotationImage = new File (Const.ROOT_DIR.getAbsolutePath() + File.separator + "sketch.jpg");
+          if (annotationImage.exists())
+             annotationImage.delete();
+         try {
+             FileOutputStream out = new FileOutputStream(annotationImage);
+             whatTheUserDrewBitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
+             out.flush();
+             out.close();
+         } catch (Exception e) {
+            Log.e(LOG_TAG, "Error saving image: " + e.getMessage());
+         }
 
 
 

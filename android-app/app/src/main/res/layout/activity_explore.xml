@@ -1,13 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout android:id="@+id/drawingLayout" xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout android:id="@+id/drawingLayout" xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:keepScreenOn="true"
     android:orientation="vertical" >
+    <Button
+        android:id="@+id/btn_submit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@color/colorPrimaryDark"
+        android:text="Submit Drawing"
+        android:textColor="#FFFFFF">
+
+    </Button>
 
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
 
         <!-- Photo -->
         <ImageView
@@ -17,13 +28,20 @@
             android:adjustViewBounds="true"
             android:paddingLeft="0dp"
             android:paddingRight="0dp"
-            android:rotation="90" />
+            android:rotation="90"
+            />
+
 
         <com.example.hackmitwork.DrawingView
             android:id="@+id/drawing_area"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            />
+
+
     </FrameLayout>
 
 
-</LinearLayout>
+
+
+</RelativeLayout>
