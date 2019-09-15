@@ -11,4 +11,6 @@ public class Const {
     // options: 320x180, 640x360, 1280x720, 1920x1080
     public static int IMAGE_WIDTH = 640;
     public static int IMAGE_HEIGHT = 360;
+    public static final File ROOT_DIR = new File(Environment.getExternalStorageDirectory() +
+            File.separator + "HACKMIT" + File.separator);
 }
