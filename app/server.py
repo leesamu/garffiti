@@ -12,7 +12,7 @@ default_port = 8888
 
 # Take the location as a key and return the associated image, annotation, and feature vector
 image_map = defaultdict(list)
-
+tag_map = defaultdict(list)
 
 # Annotation mode
 @app.route('/save', methods=['POST'])
@@ -26,6 +26,8 @@ def save():
     image_map[gps_loc]["raw"].append(image)
     image_map[gps_loc]["featurized"].append(featurize(image))
     image_map[gps_loc]["annotation"].append(annot)
+
+    tag_map[gps_loc] = data["tag"]
 
 # Explore mode for viewing current art
 @app.route('/explore', methods=['POST'])
@@ -54,15 +56,15 @@ def read():
 @app.route('/gps', methods=['GET', 'POST'])
 def gps():
     if flask.request.method == 'GET':
-        points = { "gps" : image_map.keys() }
-        for i in range(len(points["gps"])):
-            points["gps"][i] = (float(points["gps"][i].split(",")[0]), float(points["gps"][i].split(",")[1]))
+        points = { "markers" : image_map.keys()  }
+        for i in range(len(points["markers"])):
+            points["markers"][i] = ((float(points["markers"][i].split(",")[0]), float(points["markers"][i].split(",")[1])), tag_map[points["markers"][i]])
         return json.dumps(points)
     else:
         req = json.loads(flask.request.form.to_dict().keys()[0])
-        print req
         gps_str = ",".join([str(req["lat"]), str(req["lng"])])
         image_map[gps_str] = None
+        tag_map[gps_str] = req["tag"]
         return "GPS point added!"
 
 def arguments():
@@ -78,7 +80,7 @@ def main():
     args = arguments()
     #TOLERANCE = args.tolerance
 
-    app.run(debug=True, host='0.0.0.0')
+    app.run(host='0.0.0.0')
     #app.run()
 
 if __name__ == "__main__":
