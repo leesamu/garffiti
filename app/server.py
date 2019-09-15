@@ -21,14 +21,14 @@ def save():
 
     gps_loc = ",".join([ str(x) for x in data["gps_loc"] ])
     image = decode(data["image"])
-    annot = decode(data["annotation"])
+    annot = data["annotation"]
 
     image_map[gps_loc]["raw"].append(image)
     image_map[gps_loc]["featurized"].append(featurize(image))
     image_map[gps_loc]["annotation"].append(annot)
 
 # Explore mode for viewing current art
-@app.route('/explore', methods=['POST'])
+@app.route('/explore', methods=['POST', 'GET'])
 def read():
     data = request.get_json()
 
@@ -50,7 +50,9 @@ def read():
     # return transform(best_image, best_annotation, best_features, query_image, query_features)
     
     if best_match is None:
+        print("We found nothing")
         return encode(cv2.cvtColor(image, cv2.COLOR_BGR2GRAY))
+    print("We found a match")
     return encode(best_match)
 
 
