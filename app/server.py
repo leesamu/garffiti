@@ -3,6 +3,7 @@ from collections import deque, defaultdict
 from argparse import ArgumentParser
 from base64 import b64encode, b64decode
 
+import json
 from cv import *
 
 app = Flask(__name__)
@@ -18,8 +19,8 @@ def save():
     data = request.get_json()
     
     gps_loc = ",".join([ str(x) for x in data["gps_loc"] ])
-    image = b64decode(data["image"])
-    annot = b64decode(data["annotation"])
+    image = decode(data["image"])
+    annot = decode(data["annotation"])
 
     image_map[gps_loc]["raw"].append(image)
     image_map[gps_loc]["featurized"].append(featurize(image))
@@ -31,7 +32,7 @@ def read():
     data = request.get_json()
 
     gps_loc = ",".join([ str(x) for x in data["gps_loc"] ])
-    image = b64decode(data["image"])
+    image = decode(data["image"])
 
     ft = featurize(image)
 
@@ -46,7 +47,11 @@ def read():
 
     # return transform(best_image, best_annotation, best_features, query_image, query_features)
     
-    return b64encode(image)
+    return encode(image)
+
+@app.route('/gps', methods=['GET']):
+def gps():
+    return json.dumps({ "gps": list(image_map.keys()) })
 
 def arguments():
     parser = ArgumentParser()
