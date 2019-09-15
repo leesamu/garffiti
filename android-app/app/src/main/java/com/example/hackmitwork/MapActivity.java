@@ -6,13 +6,11 @@ import android.nfc.Tag;
 import android.os.AsyncTask;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import java.io.UnsupportedEncodingException;
-import com.android.volley.NetworkResponse;
-import com.android.volley.toolbox.HttpHeaderParser;
-import com.android.volley.toolbox.JsonObjectRequest;
 import java.util.HashMap;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.Volley;
@@ -28,9 +26,6 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
-import com.google.android.material.tabs.TabLayout;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -66,41 +61,34 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private String tagName = "David";
 
 private LatLng getMarkers(){
-    try {
-        String url = "172.16.143.201:5000";
-        URL obj = new URL(url);
-        HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-        con.setRequestMethod("GET");
-        //add request header
-        con.setRequestProperty("User-Agent", "Mozilla/5.0");
-        int responseCode = con.getResponseCode();
-        System.out.println("\nSending 'GET' request to URL : " + url);
-        System.out.println("Response Code : " + responseCode);
-        BufferedReader in = new BufferedReader(
-                new InputStreamReader(con.getInputStream()));
-        String inputLine;
-        StringBuffer response = new StringBuffer();
-        while ((inputLine = in.readLine()) != null) {
-            response.append(inputLine);
-        }
-        in.close();
-        JSONObject myResponse = new JSONObject(response.toString());
-        Log.d(TAG,myResponse.toString());
-        System.out.println("Loaded");
-        //myResponse.
+    // Initialize a new StringRequest
+    RequestQueue requestQueue = Volley.newRequestQueue(this);
+    String url = "http://35.194.84.11:5000/gps";
+    JsonObjectRequest stringRequest = new JsonObjectRequest(
+            Request.Method.GET,
+            url, null,
+            new Response.Listener<JSONObject>() {
+                @Override
+                public void onResponse(JSONObject response) {
+                     Log.d("Hello",response.toString());
+                }
+            },
+            new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    // Do something when get error
+                    Log.d("LMAO","What");
 
-    }
-    catch (MalformedURLException e){
-        e.getStackTrace();
-    }
-    catch (IOException i){
-        i.getStackTrace();
-    }
-    catch(JSONException j){
-        j.getStackTrace();
-    }
-    return null;
+                }
+            }
+    );
+
+    // Add StringRequest to the RequestQueue
+    requestQueue.add(stringRequest);
+    return  null;
 }
+
+
 private void sendPost2(LatLng latLng, String tag){
 
     try {
@@ -108,8 +96,8 @@ private void sendPost2(LatLng latLng, String tag){
         String URL = "http://35.194.84.11:5000/gps";
         JSONObject jsonBody = new JSONObject();
         jsonBody.put("tag", tag);
-        jsonBody.put("lng",latLng.longitude);
-        jsonBody.put("lat",latLng.latitude);
+        jsonBody.put("lng",latLng.longitude + 2);
+        jsonBody.put("lat",latLng.latitude + 1);
         final String requestBody = jsonBody.toString();
 
         StringRequest stringRequest = new StringRequest(Request.Method.POST, URL, new Response.Listener<String>() {
@@ -148,37 +136,7 @@ private void sendPost2(LatLng latLng, String tag){
 
 
 
-private void sendPost(LatLng latLng, String tag)
-    {
-    try {
-        String url = "http://35.194.84.11:5000/gps";
-        final double latitude = latLng.latitude;
-        final double longitude = latLng.longitude;
-        RequestQueue requestQueue = Volley.newRequestQueue(MapActivity.this);
-        HashMap<String,String> params = new HashMap<>();
-        params.put("tag",tag);
-        params.put("lat",Double.toString(latitude));
-        params.put("lng",Double.toString(longitude));
-        Log.d("Hello","This was hit");
-        CustomRequest jsObjRequest = new CustomRequest(Method.POST, url, params, new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-               Log.d("ooh","What");
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-               Log.d("error", "Volley");
-            }
-        });
-        requestQueue.add(jsObjRequest);
 
-    } catch (Exception e) {
-        Log.d("Error","fail 2");
-    }
-        // Toast.makeText(getApplicationContext(), "done", Toast.LENGTH_LONG).show();
-
-    }
 
 
 
@@ -188,6 +146,7 @@ private void sendPost(LatLng latLng, String tag)
         nMap = googleMap;
         getDeviceLocation(false);
         nMap.setMyLocationEnabled(true);
+        getMarkers();
 
     }
 
