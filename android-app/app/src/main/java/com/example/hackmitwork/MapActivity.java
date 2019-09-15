@@ -4,6 +4,7 @@ import java.io.IOException;
 import android.location.Location;
 import android.nfc.Tag;
 import android.os.AsyncTask;
+import com.google.android.gms.maps.model.Marker;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.JsonObjectRequest;
@@ -84,8 +85,11 @@ private LatLng getMarkers(){
                          lng =  doubleVals.getDouble(1);
                          tag = val.getString(1);
                          LatLng latLng = new LatLng(lat,lng);
-                         MarkerOptions marker = new MarkerOptions().position(latLng).title(tag);
-                         nMap.addMarker(marker);
+                          Marker marker =  nMap.addMarker(new MarkerOptions()
+                                  .position(latLng).title(tag));
+
+
+
 
                       }
                   }
@@ -192,6 +196,20 @@ private void sendPost2(LatLng latLng, String tag){
                    if(setTag){
                        sendPost2(latLng,tagName);
                    }
+                   //  MarkerOptions marker = new MarkerOptions().position(latLng).title(tag);
+                   //  nMap.addMarker(marker);
+                   nMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                       @Override
+                       public boolean onMarkerClick(Marker marker) {
+                           LatLng latLng = marker.getPosition();
+                           Intent i = new Intent(MapActivity.this, DiscoverActivity.class);
+                           i.putExtra("latLng",latLng);
+                           startActivity(i);
+
+                           //Using position get Value from arraylist
+                           return false;
+                       }
+                   });
 
                }
                else {
