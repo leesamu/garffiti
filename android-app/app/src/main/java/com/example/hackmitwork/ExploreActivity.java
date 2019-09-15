@@ -10,7 +10,6 @@ import androidx.appcompat.widget.Toolbar;
 
 import android.view.View;
 
-import android.hardware.Camera;
 import android.content.Intent;
 import android.provider.MediaStore;
 import android.graphics.Bitmap;
@@ -20,34 +19,40 @@ import java.io.IOException;
 import android.os.Environment;
 import androidx.core.content.FileProvider;
 import android.net.Uri;
+import java.util.Date;
+import java.text.SimpleDateFormat;
+import android.graphics.BitmapFactory;
 
 import android.util.Log;
 
 public class ExploreActivity extends AppCompatActivity {
 
     String tag = "Josh Debug Msg";
-    //static final int REQUEST_IMAGE_CAPTURE = 1;
-    //public static final String EXTRA_OUTPUT = "../res/drawable";
+    static final int REQUEST_IMAGE_CAPTURE= 1;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_explore);
+        setContentView(R.layout.activity_explore);            //Connect to XML file
         Log.e(tag, "Content view has been set!");
         dispatchTakePictureIntent();
+
     }
 
-//    private void dispatchTakePictureIntent() {
-//        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-//        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-//            // takePictureIntent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, "../../res/drawable");
-//            takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, "/Documents");
-//            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
-//            Log.e("ExploreActivityMessage", "Photo taken!");
-//        }
-//    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
 
+            ImageView image = (ImageView) findViewById(R.id.imageView);
+
+            currentPhotoPath = currentPhotoPath.replace("/storage/emulated/0", "");
+
+            String imagePath = Environment.getExternalStorageDirectory().getAbsolutePath() + currentPhotoPath;
+            Bitmap bitmap = BitmapFactory.decodeFile(imagePath);
+            image.setImageBitmap(bitmap);
+        }
+    }
 
     static final int REQUEST_TAKE_PHOTO = 1;
 
@@ -78,7 +83,8 @@ public class ExploreActivity extends AppCompatActivity {
 
     private File createImageFile() throws IOException {
         // Create an image file name
-        String imageFileName = "JPEG_Image";
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_Hack";
         File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         File image = File.createTempFile(
                 imageFileName,  /* prefix */
