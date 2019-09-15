@@ -1,6 +1,8 @@
 import cv2
 import config
 import numpy as np
+import base64
+from PIL import Image
 
 orb = cv2.ORB_create()
 bf_matcher = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=True)
@@ -37,6 +39,18 @@ def match(self, test_data, train_data):
     else:
         return len(matches)
 
+def decode(base64_string):
+    sbuf = StringIO()
+    sbuf.write(base64.b64decode(base64_string))
+    pimg = Image.open(sbuf)
+    return cv2.cvtColor(np.array(pimg), cv2.COLOR_RGB2BGR)
+
+def encode(image):
+   retval, buffer = cv2.imencode('.jpg', image)
+   jpg_as_text = base64.b64encode(buffer)
+   return jpg_as_text
+
+"""
 def decode(raw_data, gray_scale = False):
     img_array = np.asarray(bytearray(raw_data), dtype=np.int8)
     if gray_scale:
@@ -49,3 +63,4 @@ def encode(img, jpeg_quality = 95):
     result, data = cv2.imencode('.jpg', img, [cv2.IMWRITE_JPEG_QUALITY, jpeg_quality])
     raw_data = data.tostring()
     return raw_data
+"""
