@@ -40,7 +40,9 @@ public class ExploreActivity extends AppCompatActivity {
     private Button startAnnotateButton = null;
     private Button exitAnnotateButton = null;
     private DrawingView drawingView = null;
+    private Button marker_btn;
 
+    private Bitmap currentCapturedBm = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +51,20 @@ public class ExploreActivity extends AppCompatActivity {
         Log.e(tag, "Content view has been set!");
         dispatchTakePictureIntent();
 
+        capturedImgView = (ImageView) findViewById(R.id.imageView);
+        drawingView = (DrawingView) findViewById(R.id.drawing_area);
+
+        marker_btn = findViewById(R.id.markerbtn);
+        marker_btn.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                capturedImgView.setImageBitmap(currentCapturedBm);
+                drawingView.clearDrawing();
+                // TODO: SWITCH ACTIVITIES
+                startActivity(new Intent(ExploreActivity.this, MapActivity.class));
+                finish();
+            }
+        });
 
 //        startAnnotateButton = (Button) findViewById(R.id.startAnnotationButton);
 //        exitAnnotateButton = (Button) findViewById(R.id.exitAnnotationButton);
@@ -83,21 +99,16 @@ public class ExploreActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode,resultCode,data); // david added
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-
-            ImageView image = (ImageView) findViewById(R.id.imageView);
 
             currentPhotoPath = currentPhotoPath.replace("/storage/emulated/0", "");
 
             String imagePath = Environment.getExternalStorageDirectory().getAbsolutePath() + currentPhotoPath;
-            Bitmap bitmap = BitmapFactory.decodeFile(imagePath);
-            image.setImageBitmap(bitmap);
+            final Bitmap bitmap = BitmapFactory.decodeFile(imagePath);
 
-
-//            ViewGroup layout = (ViewGroup) findViewById(R.id.drawingLayout);
-            drawingView = (DrawingView) findViewById(R.id.drawing_area);
-//            drawingView.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
-//            layout.addView(drawingView);
+            currentCapturedBm = bitmap;
+            capturedImgView.setImageBitmap(bitmap);
         }
     }
 
