@@ -37,7 +37,7 @@ def read():
     print flask.request.form
     data = json.loads(flask.request.form.to_dict()[0])
 
-    gps_loc = ",".join([ str(x) for x in data["gps_loc"] ])
+    gps_loc = data["latlng"]
     image = decode(data["image"])
 
     img, kp, desc = featurize(image)

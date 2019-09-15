@@ -27,6 +27,8 @@
         <activity
             android:name=".ExploreActivity"
             android:label="@string/title_explore_page"></activity>
+        <activity android:name=".DiscoverActivity"
+            android:label="DiscoverAcvitiy"></activity>
         <activity
             android:name=".MapActivity"
            ></activity>
