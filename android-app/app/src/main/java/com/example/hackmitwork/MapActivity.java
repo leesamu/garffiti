@@ -9,8 +9,12 @@ import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import java.io.UnsupportedEncodingException;
+import com.android.volley.NetworkResponse;
+import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.JsonObjectRequest;
 import java.util.HashMap;
+import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.Volley;
 import android.os.Bundle;
 import android.content.Intent;
@@ -97,6 +101,52 @@ private LatLng getMarkers(){
     }
     return null;
 }
+private void sendPost2(LatLng latLng, String tag){
+
+    try {
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        String URL = "http://35.194.84.11:5000/gps";
+        JSONObject jsonBody = new JSONObject();
+        jsonBody.put("tag", tag);
+        jsonBody.put("lng",latLng.longitude);
+        jsonBody.put("lat",latLng.latitude);
+        final String requestBody = jsonBody.toString();
+
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, URL, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Log.i("VOLLEY", response);
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e("VOLLEY", error.toString());
+            }
+        }) {
+
+
+            @Override
+            public byte[] getBody() throws AuthFailureError {
+                try {
+                    return requestBody == null ? null : requestBody.getBytes("utf-8");
+                } catch (UnsupportedEncodingException uee) {
+                    VolleyLog.wtf("Unsupported Encoding while trying to get the bytes of %s using %s", requestBody, "utf-8");
+                    return null;
+                }
+            }
+
+
+        };
+
+        requestQueue.add(stringRequest);
+    } catch (JSONException e) {
+        e.printStackTrace();
+    }
+
+
+}
+
+
 
 private void sendPost(LatLng latLng, String tag)
     {
@@ -107,6 +157,8 @@ private void sendPost(LatLng latLng, String tag)
         RequestQueue requestQueue = Volley.newRequestQueue(MapActivity.this);
         HashMap<String,String> params = new HashMap<>();
         params.put("tag",tag);
+        params.put("lat",Double.toString(latitude));
+        params.put("lng",Double.toString(longitude));
         Log.d("Hello","This was hit");
         CustomRequest jsObjRequest = new CustomRequest(Method.POST, url, params, new Response.Listener<JSONObject>() {
             @Override
@@ -153,7 +205,7 @@ private void sendPost(LatLng latLng, String tag)
                    LatLng latLng = new LatLng(currentLocation.getLatitude(),currentLocation.getLongitude());
                    moveCamera(latLng,DEFAULT_ZOOM);
                    if(setTag){
-                       sendPost(latLng,tagName);
+                       sendPost2(latLng,tagName);
                    }
 
                }
