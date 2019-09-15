@@ -74,7 +74,7 @@ public class DiscoverActivity extends AppCompatActivity {
     private void sendPost2(String encoded_image){
         try {
             RequestQueue requestQueue = Volley.newRequestQueue(this);
-            String URL = "http://35.194.84.11:5000/gps";
+            String URL = "http://35.194.84.11:5000/explore";
             JSONObject jsonBody = new JSONObject();
             jsonBody.put("image", encoded_image);
             jsonBody.put("latlng", latLng);
