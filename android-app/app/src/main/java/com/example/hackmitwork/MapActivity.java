@@ -235,7 +235,7 @@ private void sendPost2(LatLng latLng, String tag){
     private void renderMarker(){
         getDeviceLocation(true);
         startActivity(new Intent(MapActivity.this,ExploreActivity.class));
-        getMarkers();
+        finish();
     }
 
     @Override

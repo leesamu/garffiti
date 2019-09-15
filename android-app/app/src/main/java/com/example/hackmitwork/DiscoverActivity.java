@@ -37,6 +37,7 @@ public class DiscoverActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_discover);
         annotatedImageView = (ImageView) findViewById(R.id.annotated_image);
         preview = (CameraPreview) findViewById(R.id.camera_preview);
         mCamera = preview.checkCamera();
@@ -44,7 +45,6 @@ public class DiscoverActivity extends AppCompatActivity {
         mCamera.setPreviewCallbackWithBuffer(previewCallback);
         reusedBuffer = new byte[1920 * 1080 * 3 / 2]; // 1.5 bytes per pixel
         mCamera.addCallbackBuffer(reusedBuffer);
-        setContentView(R.layout.activity_discover);
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
             latLng = extras.getString("latLng");
