@@ -29,7 +29,7 @@ def save():
 
     tag_map[gps_loc] = data["tag"]
 
-    return encode(image)
+    return json.dumps({"image":encode(image)})
 
 # Explore mode for viewing current art
 @app.route('/explore', methods=['POST', 'GET'])
