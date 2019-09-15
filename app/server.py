@@ -15,9 +15,9 @@ image_map = defaultdict(list)
 
 # Annotation mode
 @app.route('/save', methods=['POST'])
-def save(): 
+def save():
     data = request.get_json()
-    
+
     gps_loc = ",".join([ str(x) for x in data["gps_loc"] ])
     image = decode(data["image"])
     annot = decode(data["annotation"])
@@ -46,12 +46,15 @@ def read():
             best_match = ft_img
 
     # return transform(best_image, best_annotation, best_features, query_image, query_features)
-    
+
     return encode(image)
 
-@app.route('/gps', methods=['GET']):
+@app.route('/gps', methods=['GET'])
 def gps():
-    return json.dumps({ "gps": list(image_map.keys()) })
+    points = { "gps" : image_map.keys() }
+    for i in range(len(points["gps"])):
+        points["gps"][i] = (int(points["gps"][i].split(",")[0]), int(points["gps"][i].split(",")[1]))
+    return json.dumps(points)
 
 def arguments():
     parser = ArgumentParser()
