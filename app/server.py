@@ -27,6 +27,8 @@ def save():
     image_map[gps_loc]["featurized"].append(featurize(image))
     image_map[gps_loc]["annotation"].append(annot)
 
+    return encode(image)
+
 # Explore mode for viewing current art
 @app.route('/explore', methods=['POST'])
 def read():
