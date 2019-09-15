@@ -1,5 +1,6 @@
 import cv2
 import config
+import numpy as np
 
 orb = cv2.ORB_create()
 bf_matcher = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=True)
