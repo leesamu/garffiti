@@ -4,6 +4,7 @@ import java.io.IOException;
 import android.location.Location;
 import android.nfc.Tag;
 import android.os.AsyncTask;
+import com.google.android.gms.maps.model.Marker;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.JsonObjectRequest;
@@ -12,6 +13,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
+import org.json.JSONArray;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.Volley;
 import android.os.Bundle;
@@ -71,6 +73,34 @@ private LatLng getMarkers(){
                 @Override
                 public void onResponse(JSONObject response) {
                      Log.d("Hello",response.toString());
+                   double lng, lat;
+                   String tag;
+                  try {
+                      JSONArray the_json_array = response.getJSONArray("markers");
+                      System.out.println(the_json_array);
+                      for(int i = 0; i < the_json_array.length();++i){
+                          JSONArray val = the_json_array.getJSONArray(i);
+                         JSONArray doubleVals = val.getJSONArray(0);
+                         lat = doubleVals.getDouble(0);
+                         lng =  doubleVals.getDouble(1);
+                         tag = val.getString(1);
+                         LatLng latLng = new LatLng(lat,lng);
+                          Marker marker =  nMap.addMarker(new MarkerOptions()
+                                  .position(latLng).title(tag));
+
+
+
+
+                      }
+                  }
+                  catch (JSONException j){
+                      j.getStackTrace();
+                  }
+
+
+
+
+
                 }
             },
             new Response.ErrorListener() {
@@ -96,8 +126,8 @@ private void sendPost2(LatLng latLng, String tag){
         String URL = "http://35.194.84.11:5000/gps";
         JSONObject jsonBody = new JSONObject();
         jsonBody.put("tag", tag);
-        jsonBody.put("lng",latLng.longitude + 2);
-        jsonBody.put("lat",latLng.latitude + 1);
+        jsonBody.put("lng",latLng.longitude);
+        jsonBody.put("lat",latLng.latitude);
         final String requestBody = jsonBody.toString();
 
         StringRequest stringRequest = new StringRequest(Request.Method.POST, URL, new Response.Listener<String>() {
@@ -166,6 +196,20 @@ private void sendPost2(LatLng latLng, String tag){
                    if(setTag){
                        sendPost2(latLng,tagName);
                    }
+                   //  MarkerOptions marker = new MarkerOptions().position(latLng).title(tag);
+                   //  nMap.addMarker(marker);
+                   nMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                       @Override
+                       public boolean onMarkerClick(Marker marker) {
+                           LatLng latLng = marker.getPosition();
+                           Intent i = new Intent(MapActivity.this, DiscoverActivity.class);
+                           i.putExtra("latLng",latLng);
+                           startActivity(i);
+
+                           //Using position get Value from arraylist
+                           return false;
+                       }
+                   });
 
                }
                else {
@@ -187,6 +231,7 @@ private void sendPost2(LatLng latLng, String tag){
     private void renderMarker(){
         getDeviceLocation(true);
         startActivity(new Intent(MapActivity.this,ExploreActivity.class));
+        getMarkers();
     }
 
     @Override

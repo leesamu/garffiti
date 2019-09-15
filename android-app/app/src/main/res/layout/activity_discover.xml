@@ -3,6 +3,12 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <com.example.hackmitwork.CameraPreview
+        android:id="@+id/camera_preview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"/>
+
     <ImageView
         android:id="@+id/annotated_image"
         android:layout_width="fill_parent"
