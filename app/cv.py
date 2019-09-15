@@ -1,12 +1,12 @@
 import cv2
 import config
 
-sift = cv2.SIFT()
-flann = cv2.FlannBasedMatcher(config.INDEX_PARAMS, config.SEARCH_PARAMS)
+orb = cv2.ORB_create()
+bf_matcher = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=True)
 
 # Returns the a tuple of features: (keypoints, descriptors).
 def featurize(self, image):
-    return sift.detectAndCompute(image)
+    return orb.detectAndCompute(image)
 
 # Returns a list of "good" matches determines by a preset threshold.
 def extract_good_matches(self, matches):
@@ -24,7 +24,7 @@ def match(self, test_data, train_data):
     score = 0
 
     # Find matches in keypoints using FLANN.
-    matches = self.extract_good_matches(self.flann.knnMatch(test_des, train_des, k = 2))
+    matches = self.extract_good_matches(bf_matcher.match(test_des, train_des))
 
     # Calculate the threshold for detecting a match.
     test_threshold = 0.1 * len(test_kp)

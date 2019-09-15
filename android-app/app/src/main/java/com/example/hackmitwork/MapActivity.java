@@ -201,8 +201,6 @@ private void sendPost2(LatLng latLng, String tag){
                 renderMarker();
             }
         });
-
-
     }
 
 
