@@ -2,13 +2,7 @@ package com.example.hackmitwork;
 
 import android.os.Bundle;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
-
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-
-import android.view.View;
 
 import android.content.Intent;
 import android.provider.MediaStore;
@@ -22,13 +16,30 @@ import android.net.Uri;
 import java.util.Date;
 import java.text.SimpleDateFormat;
 import android.graphics.BitmapFactory;
+import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
+import android.widget.Button;
+import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import android.util.Log;
 
 public class ExploreActivity extends AppCompatActivity {
 
+    String LOG_TAG = "Main-tag";
     String tag = "Josh Debug Msg";
     static final int REQUEST_IMAGE_CAPTURE= 1;
+
+    // views
+    private ImageView capturedImgView = null;
+    private TextView annotatedTextView = null;
+    private ImageView annotatedImageView = null;
+    private LinearLayout exploreView = null;
+    private LinearLayout annotateView = null;
+    private Button startAnnotateButton = null;
+    private Button exitAnnotateButton = null;
+    private DrawingView drawingView = null;
 
 
     @Override
@@ -37,6 +48,36 @@ public class ExploreActivity extends AppCompatActivity {
         setContentView(R.layout.activity_explore);            //Connect to XML file
         Log.e(tag, "Content view has been set!");
         dispatchTakePictureIntent();
+
+
+//        startAnnotateButton = (Button) findViewById(R.id.startAnnotationButton);
+//        exitAnnotateButton = (Button) findViewById(R.id.exitAnnotationButton);
+//
+//        startAnnotateButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Log.d(LOG_TAG, "button (startAnnotation) clicked");
+//                byte[] byteImage = videoStreamingThread.getCurrentFrame();
+//                currentCapturedBm = BitmapFactory.decodeByteArray(byteImage, 0, byteImage.length);
+//                exploreView.setVisibility(view.GONE);
+//                annotateView.setVisibility(view.VISIBLE);
+//                capturedImgView.setImageBitmap(currentCapturedBm);
+//                pauseStream();
+//            }
+//        });
+//
+//
+//        exitAnnotateButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Log.d(LOG_TAG, "button (exitAnnotation) clicked");
+//                annotateView.setVisibility(view.GONE);
+//                exploreView.setVisibility(view.VISIBLE);
+//                //drawingView.saveDrawing(currentCapturedBm);
+//                drawingView.clearDrawing();
+//                //resumeStream();
+//            }
+//        });
 
     }
 
@@ -51,6 +92,12 @@ public class ExploreActivity extends AppCompatActivity {
             String imagePath = Environment.getExternalStorageDirectory().getAbsolutePath() + currentPhotoPath;
             Bitmap bitmap = BitmapFactory.decodeFile(imagePath);
             image.setImageBitmap(bitmap);
+
+
+//            ViewGroup layout = (ViewGroup) findViewById(R.id.drawingLayout);
+            drawingView = (DrawingView) findViewById(R.id.drawing_area);
+//            drawingView.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+//            layout.addView(drawingView);
         }
     }
 
@@ -96,8 +143,6 @@ public class ExploreActivity extends AppCompatActivity {
         currentPhotoPath = image.getAbsolutePath();
         return image;
     }
-
-
 
 
 
